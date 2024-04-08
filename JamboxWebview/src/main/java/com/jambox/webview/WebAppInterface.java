@@ -5,27 +5,16 @@ import android.webkit.JavascriptInterface;
 
 public class WebAppInterface {
 
-    private ApplovinMaxHelper applovinMaxHelper;
+    private WebviewObject webviewObject;
 
-    public WebAppInterface(ApplovinMaxHelper applovinMaxHelper) {
-        this.applovinMaxHelper = applovinMaxHelper;
+    public WebAppInterface(WebviewObject webviewObject)
+    {
+        this.webviewObject = webviewObject;
     }
 
-    /** Show a toast from the web page. */
     @JavascriptInterface
-    public void call(String msg) {
-        String eventName = msg.replace("form?msg=","");
-        switch (eventName){
-            case "RW":
-                applovinMaxHelper.ShowRW();
-                break;
-            case "IS":
-                applovinMaxHelper.ShowIS();
-                break;
-            default:
-                System.out.println("No Match Found");
-                break;
-        }
-        System.out.println(msg);
+    public void call(String msg)
+    {
+        webviewObject.WebviewCallback(msg);
     }
 }
