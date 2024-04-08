@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 public class ApplovinMaxHelper {
 
     private static MaxInterstitialAd interstitialAd;
-    private static MaxRewardedAd rewardedAd;
+
     public static boolean IsInitialized;
 
     public static void InitializeAds(Context context)
@@ -102,6 +102,9 @@ public class ApplovinMaxHelper {
         }
     }
 
+
+    private static MaxRewardedAd rewardedAd;
+    private static OnRewardedCompleted onRewardedCompleted;
     private static int rewardedRetryAttempt = 0;
     private static void InitializeRewarded(Context context)
     {
@@ -112,6 +115,10 @@ public class ApplovinMaxHelper {
             public void onUserRewarded(@NonNull MaxAd maxAd, @NonNull MaxReward maxReward)
             {
                 // Rewarded ad was displayed and user should receive the reward
+                if (onRewardedCompleted != null)
+                {
+                    onRewardedCompleted.OnComplete();
+                }
             }
 
             @Override
@@ -163,9 +170,12 @@ public class ApplovinMaxHelper {
         rewardedAd.loadAd();
     }
 
-    public static void ShowRewarded()
+    public static void ShowRewarded(OnRewardedCompleted _onRewardedCompleted)
     {
-        if (rewardedAd.isReady()){
+        onRewardedCompleted = null;
+        if (rewardedAd.isReady())
+        {
+            onRewardedCompleted = _onRewardedCompleted;
             rewardedAd.showAd();
         }
     }

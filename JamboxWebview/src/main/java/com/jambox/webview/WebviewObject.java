@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.Toast;
 
 public class WebviewObject {
 
@@ -32,13 +33,7 @@ public class WebviewObject {
         //webview.loadUrl("https://play.playbo.in/");
         webview.loadUrl("http://test.jambox.games/test1.html");
         webview.setVisibility(View.VISIBLE);
-
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                TestFunction();
-            }
-        }, 10000);
+        //webview.evaluateJavascript("callFromUnity()", null);
     }
 
     public void CloseWebview()
@@ -52,7 +47,14 @@ public class WebviewObject {
         String eventName = msg.replace("form?msg=","");
         switch (eventName){
             case "RW":
-                ApplovinMaxHelper.ShowRewarded();
+                ApplovinMaxHelper.ShowRewarded(new OnRewardedCompleted()
+                {
+                    @Override
+                    public void OnComplete()
+                    {
+                        System.out.println("RW completed!");
+                    }
+                });
                 break;
             case "IS":
                 ApplovinMaxHelper.ShowInterstitial();
@@ -62,12 +64,6 @@ public class WebviewObject {
                 break;
         }
         System.out.println(eventName);
-    }
-
-    public void TestFunction()
-    {
-        System.out.println("Function test!!");
-        //webview.evaluateJavascript("callFromUnity()", null);
     }
 
 }
