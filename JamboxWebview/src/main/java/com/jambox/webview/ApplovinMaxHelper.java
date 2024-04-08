@@ -103,7 +103,7 @@ public class ApplovinMaxHelper {
     }
 
     private static int rewardedRetryAttempt = 0;
-    public static void InitializeRewarded(Context context)
+    private static void InitializeRewarded(Context context)
     {
         rewardedAd = MaxRewardedAd.getInstance( "7d64a59befe5cef9", (Activity) context );
         rewardedAd.setListener(new MaxRewardedAdListener()
