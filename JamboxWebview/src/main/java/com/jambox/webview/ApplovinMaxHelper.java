@@ -13,11 +13,10 @@ import com.applovin.mediation.ads.MaxInterstitialAd;
 import com.applovin.mediation.ads.MaxRewardedAd;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
+
 import java.util.concurrent.TimeUnit;
 
 public class ApplovinMaxHelper {
-
-    private static MaxInterstitialAd interstitialAd;
 
     public static boolean IsInitialized;
 
@@ -41,6 +40,8 @@ public class ApplovinMaxHelper {
         });
     }
 
+    private static MaxInterstitialAd interstitialAd;
+    private static OnInterstitialAdListener interstitialAdListener;
     private static int interstitialRetryAttempt = 0;
     private static void InitializeInterstitial(Context context)
     {
@@ -56,13 +57,23 @@ public class ApplovinMaxHelper {
             }
 
             @Override
-            public void onAdDisplayed(@NonNull MaxAd maxAd) { }
+            public void onAdDisplayed(@NonNull MaxAd maxAd)
+            {
+                if (interstitialAdListener != null)
+                {
+                    interstitialAdListener.OnAdDisplayed();
+                }
+            }
 
             @Override
             public void onAdHidden(@NonNull MaxAd maxAd)
             {
                 // Interstitial ad is hidden. Pre-load the next ad
                 interstitialAd.loadAd();
+                if (interstitialAdListener != null)
+                {
+                    interstitialAdListener.OnAdHidden();
+                }
             }
 
             @Override
@@ -90,21 +101,27 @@ public class ApplovinMaxHelper {
             {
                 // Interstitial ad failed to display. AppLovin recommends that you load the next ad.
                 interstitialAd.loadAd();
+                if (interstitialAdListener != null)
+                {
+                    interstitialAdListener.OnAdDisplayFailed();
+                }
             }
         });
         interstitialAd.loadAd();
     }
 
-    public static void ShowInterstitial()
+    public static void ShowInterstitial(OnInterstitialAdListener _interstitialAdListener)
     {
-        if (interstitialAd.isReady()){
+        interstitialAdListener = null;
+        if (interstitialAd.isReady())
+        {
+            interstitialAdListener = _interstitialAdListener;
             interstitialAd.showAd();
         }
     }
 
-
     private static MaxRewardedAd rewardedAd;
-    private static OnRewardedCompleted onRewardedCompleted;
+    private static OnRewardedAdListener rewardedAdListener;
     private static int rewardedRetryAttempt = 0;
     private static void InitializeRewarded(Context context)
     {
@@ -115,9 +132,9 @@ public class ApplovinMaxHelper {
             public void onUserRewarded(@NonNull MaxAd maxAd, @NonNull MaxReward maxReward)
             {
                 // Rewarded ad was displayed and user should receive the reward
-                if (onRewardedCompleted != null)
+                if (rewardedAdListener != null)
                 {
-                    onRewardedCompleted.OnComplete();
+                    rewardedAdListener.OnAdCompleted();
                 }
             }
 
@@ -137,6 +154,10 @@ public class ApplovinMaxHelper {
             {
                 // rewarded ad is hidden. Pre-load the next ad
                 rewardedAd.loadAd();
+                if (rewardedAdListener != null)
+                {
+                    rewardedAdListener.OnAdHidden();
+                }
             }
 
             @Override
@@ -165,19 +186,32 @@ public class ApplovinMaxHelper {
             {
                 // Rewarded ad failed to display. AppLovin recommends that you load the next ad.
                 rewardedAd.loadAd();
+                if (rewardedAdListener != null)
+                {
+                    rewardedAdListener.OnAdDisplayFailed();
+                }
             }
         });
         rewardedAd.loadAd();
     }
 
-    public static void ShowRewarded(OnRewardedCompleted _onRewardedCompleted)
+    public static void ShowRewarded(OnRewardedAdListener _rewardedAdListener)
     {
-        onRewardedCompleted = null;
+        rewardedAdListener = null;
         if (rewardedAd.isReady())
         {
-            onRewardedCompleted = _onRewardedCompleted;
+            rewardedAdListener = _rewardedAdListener;
             rewardedAd.showAd();
         }
+    }
+
+    public static class AdsCode
+    {
+        public static final int BEFORE_ADS_SHOWN = 100;
+        public static final int ADS_DISMISSED = 110;
+        public static final int ADS_WATCH_SUCCESS = 200;
+        public static final int ADS_VIEWED_OR_DISMISSED = 201;
+        public static final int ADS_NOT_SHOWN = 400;
     }
 
 }

@@ -2,12 +2,10 @@ package com.jambox.webview;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.Handler;
 import android.view.View;
-import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.widget.Toast;
+import org.json.JSONObject;
 
 public class WebviewObject {
 
@@ -47,23 +45,64 @@ public class WebviewObject {
         String eventName = msg.replace("form?msg=","");
         switch (eventName){
             case "RW":
-                ApplovinMaxHelper.ShowRewarded(new OnRewardedCompleted()
+                ApplovinMaxHelper.ShowRewarded(new OnRewardedAdListener()
                 {
                     @Override
-                    public void OnComplete()
+                    public void OnAdDisplayFailed()
+                    {
+                        System.out.println("RW display Failed!!");
+                        String script = "handleMaxRewardedCallback(" + GetCallbackJson(ApplovinMaxHelper.AdsCode.ADS_NOT_SHOWN) + ")";
+                        webview.evaluateJavascript(script, null);
+                    }
+
+                    @Override
+                    public void OnAdDisplayed()
+                    {
+                        System.out.println("RW Displayed!!");
+                        String script = "handleMaxRewardedCallback(" + GetCallbackJson(ApplovinMaxHelper.AdsCode.BEFORE_ADS_SHOWN) + ")";
+                        webview.evaluateJavascript(script, null);
+                    }
+
+                    @Override
+                    public void OnAdCompleted()
                     {
                         System.out.println("RW completed!");
+                        String script = "handleMaxRewardedCallback(" + GetCallbackJson(ApplovinMaxHelper.AdsCode.ADS_WATCH_SUCCESS) + ")";
+                        webview.evaluateJavascript(script, null);
+                    }
+
+                    @Override
+                    public void OnAdHidden()
+                    {
+                        System.out.println("RW Hidden!!");
+                        String script = "handleMaxRewardedCallback(" + GetCallbackJson(ApplovinMaxHelper.AdsCode.ADS_VIEWED_OR_DISMISSED) + ")";
+                        webview.evaluateJavascript(script, null);
                     }
                 });
                 break;
             case "IS":
-                ApplovinMaxHelper.ShowInterstitial();
+                ApplovinMaxHelper.ShowInterstitial(null);
                 break;
             default:
                 System.out.println("No Match Found");
                 break;
         }
         System.out.println(eventName);
+    }
+
+    private String GetCallbackJson(int code)
+    {
+        try
+        {
+            JSONObject json = new JSONObject();
+            json.put("code", code);
+            return json.toString();
+        }
+        catch (Exception e)
+        {
+            System.out.println("Error Json: " + e);
+            return "";
+        }
     }
 
 }
