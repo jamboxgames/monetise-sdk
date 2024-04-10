@@ -29,7 +29,7 @@ public class WebviewObject {
         webSettings.setJavaScriptEnabled(true);
         webview.addJavascriptInterface(new WebAppInterface(this), "Unity");
         //webview.loadUrl("https://play.playbo.in/");
-        webview.loadUrl("http://test.jambox.games/test1.html");
+        webview.loadUrl("https://jamgame.jambox.games/");
         webview.setVisibility(View.VISIBLE);
         //webview.evaluateJavascript("callFromUnity()", null);
     }
@@ -42,8 +42,7 @@ public class WebviewObject {
 
     public void WebviewCallback(String msg)
     {
-        String eventName = msg.replace("form?msg=","");
-        switch (eventName){
+        switch (msg){
             case "RW":
                 ApplovinMaxHelper.ShowRewarded(new OnRewardedAdListener()
                 {
@@ -87,7 +86,7 @@ public class WebviewObject {
                 System.out.println("No Match Found");
                 break;
         }
-        System.out.println(eventName);
+        System.out.println(msg);
     }
 
     private String GetCallbackJson(int code)
