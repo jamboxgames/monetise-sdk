@@ -5,6 +5,8 @@ import android.content.Context;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
+
 import org.json.JSONObject;
 
 public class WebviewObject {
@@ -25,7 +27,8 @@ public class WebviewObject {
         Activity activity = (Activity) context;
         activity.setContentView(webview);
         WebSettings webSettings = webview.getSettings();
-        //webview.setWebViewClient(new WebViewClient());
+        webSettings.setDomStorageEnabled(true);
+        webview.setWebViewClient(new WebViewClient());
         webSettings.setJavaScriptEnabled(true);
         webview.addJavascriptInterface(new WebAppInterface(this), "Unity");
         //webview.loadUrl("https://play.playbo.in/");
