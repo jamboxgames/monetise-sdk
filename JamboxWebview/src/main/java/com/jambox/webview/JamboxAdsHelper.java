@@ -16,11 +16,12 @@ import com.applovin.sdk.AppLovinSdkConfiguration;
 
 import java.util.concurrent.TimeUnit;
 
-public class ApplovinMaxHelper {
+public class JamboxAdsHelper
+{
 
     public static boolean IsInitialized;
 
-    public static void InitializeAds(Context context)
+    public static void InitializeAds(Context context, String interstitialId, String rewardedId)
     {
         if (IsInitialized)
             return;
@@ -34,8 +35,8 @@ public class ApplovinMaxHelper {
             public void onSdkInitialized(AppLovinSdkConfiguration appLovinSdkConfiguration) {
                 //SDK Initialized
                 System.out.println("Applovin SDK Initialized");
-                InitializeInterstitial(context);
-                InitializeRewarded(context);
+                InitializeInterstitial(context, interstitialId);
+                InitializeRewarded(context, rewardedId);
             }
         });
     }
@@ -43,9 +44,9 @@ public class ApplovinMaxHelper {
     private static MaxInterstitialAd interstitialAd;
     private static OnInterstitialAdListener interstitialAdListener;
     private static int interstitialRetryAttempt = 0;
-    private static void InitializeInterstitial(Context context)
+    private static void InitializeInterstitial(Context context, String interstitialId)
     {
-        interstitialAd = new MaxInterstitialAd( "0ee55073fd46cb13", (Activity) context );
+        interstitialAd = new MaxInterstitialAd( interstitialId, (Activity) context );
         interstitialAd.setListener(new MaxAdListener()
         {
             @Override
@@ -123,9 +124,9 @@ public class ApplovinMaxHelper {
     private static MaxRewardedAd rewardedAd;
     private static OnRewardedAdListener rewardedAdListener;
     private static int rewardedRetryAttempt = 0;
-    private static void InitializeRewarded(Context context)
+    private static void InitializeRewarded(Context context, String rewardedId)
     {
-        rewardedAd = MaxRewardedAd.getInstance( "7d64a59befe5cef9", (Activity) context );
+        rewardedAd = MaxRewardedAd.getInstance( rewardedId, (Activity) context );
         rewardedAd.setListener(new MaxRewardedAdListener()
         {
             @Override

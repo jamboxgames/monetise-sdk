@@ -13,12 +13,11 @@ public class WebviewObject {
 
     private WebView webview;
     private Context context;
-    private ApplovinMaxHelper applovinHelper;
+    private JamboxAdsHelper applovinHelper;
 
     public WebviewObject(Context context)
     {
         this.context = context;
-        ApplovinMaxHelper.InitializeAds(context);
     }
 
     public void StartWebview()
@@ -47,13 +46,13 @@ public class WebviewObject {
     {
         switch (msg){
             case "RW":
-                ApplovinMaxHelper.ShowRewarded(new OnRewardedAdListener()
+                JamboxAdsHelper.ShowRewarded(new OnRewardedAdListener()
                 {
                     @Override
                     public void OnAdDisplayFailed()
                     {
                         System.out.println("RW display Failed!!");
-                        String script = "handleMaxRewardedCallback(" + GetCallbackJson(ApplovinMaxHelper.AdsCode.ADS_NOT_SHOWN) + ")";
+                        String script = "handleMaxRewardedCallback(" + GetCallbackJson(JamboxAdsHelper.AdsCode.ADS_NOT_SHOWN) + ")";
                         webview.evaluateJavascript(script, null);
                     }
 
@@ -61,7 +60,7 @@ public class WebviewObject {
                     public void OnAdDisplayed()
                     {
                         System.out.println("RW Displayed!!");
-                        String script = "handleMaxRewardedCallback(" + GetCallbackJson(ApplovinMaxHelper.AdsCode.BEFORE_ADS_SHOWN) + ")";
+                        String script = "handleMaxRewardedCallback(" + GetCallbackJson(JamboxAdsHelper.AdsCode.BEFORE_ADS_SHOWN) + ")";
                         webview.evaluateJavascript(script, null);
                     }
 
@@ -69,7 +68,7 @@ public class WebviewObject {
                     public void OnAdCompleted()
                     {
                         System.out.println("RW completed!");
-                        String script = "handleMaxRewardedCallback(" + GetCallbackJson(ApplovinMaxHelper.AdsCode.ADS_WATCH_SUCCESS) + ")";
+                        String script = "handleMaxRewardedCallback(" + GetCallbackJson(JamboxAdsHelper.AdsCode.ADS_WATCH_SUCCESS) + ")";
                         webview.evaluateJavascript(script, null);
                     }
 
@@ -77,13 +76,13 @@ public class WebviewObject {
                     public void OnAdHidden()
                     {
                         System.out.println("RW Hidden!!");
-                        String script = "handleMaxRewardedCallback(" + GetCallbackJson(ApplovinMaxHelper.AdsCode.ADS_VIEWED_OR_DISMISSED) + ")";
+                        String script = "handleMaxRewardedCallback(" + GetCallbackJson(JamboxAdsHelper.AdsCode.ADS_VIEWED_OR_DISMISSED) + ")";
                         webview.evaluateJavascript(script, null);
                     }
                 });
                 break;
             case "IS":
-                ApplovinMaxHelper.ShowInterstitial(null);
+                JamboxAdsHelper.ShowInterstitial(null);
                 break;
             default:
                 System.out.println("No Match Found");
