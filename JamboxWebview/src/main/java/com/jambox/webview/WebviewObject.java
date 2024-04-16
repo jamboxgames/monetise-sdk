@@ -3,9 +3,12 @@ package com.jambox.webview;
 import android.app.Activity;
 import android.content.Context;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import org.json.JSONObject;
 
@@ -13,33 +16,51 @@ public class WebviewObject {
 
     private WebView webview;
     private Context context;
+    private String ClientId;
+    private ViewGroup.LayoutParams webviewLayout;
     private JamboxAdsHelper applovinHelper;
 
-    public WebviewObject(Context context)
+    public WebviewObject(Context context, String ClientId)
     {
         this.context = context;
+        this.ClientId = ClientId;
+        this.webviewLayout = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+    }
+
+    public WebviewObject(Context context, String ClientId, ViewGroup.LayoutParams webviewLayout)
+    {
+        this.context = context;
+        this.ClientId = ClientId;
+        this.webviewLayout = webviewLayout;
     }
 
     public void StartWebview()
     {
-        webview = new WebView(context);
-        Activity activity = (Activity) context;
-        activity.setContentView(webview);
+        if (webview == null)
+        {
+            webview = new WebView(context);
+            Activity activity = (Activity) context;
+            //activity.setContentView(webview);
+            activity.addContentView(webview, webviewLayout);
+        }
+
         WebSettings webSettings = webview.getSettings();
         webSettings.setDomStorageEnabled(true);
-        webview.setWebViewClient(new WebViewClient());
         webSettings.setJavaScriptEnabled(true);
+
+        webview.setWebViewClient(new WebViewClient());
         webview.addJavascriptInterface(new WebAppInterface(this), "Unity");
-        //webview.loadUrl("https://play.playbo.in/");
-        webview.loadUrl("https://jamgame.jambox.games/");
+        webview.loadUrl("https://jamgame.jambox.games/?channel_id=" + ClientId);
         webview.setVisibility(View.VISIBLE);
-        //webview.evaluateJavascript("callFromUnity()", null);
+
+        //Moving banner to front, if it is being shown
+        JamboxAdsHelper.MoveBannerToFront();
     }
 
     public void CloseWebview()
     {
-        webview.stopLoading();
-        webview.setVisibility(View.GONE);
+        ((ViewGroup) webview.getParent()).removeView(webview);
+        webview.destroy();
     }
 
     public void WebviewCallback(String msg)
@@ -83,6 +104,12 @@ public class WebviewObject {
                 break;
             case "IS":
                 JamboxAdsHelper.ShowInterstitial(null);
+                break;
+            case "banner_enable":
+                JamboxAdsHelper.ShowBannerAd(JamboxAdsHelper.BannerPosition.BOTTOM);
+                break;
+            case "banner_disable":
+                JamboxAdsHelper.HideBannerAd();
                 break;
             default:
                 System.out.println("No Match Found");
