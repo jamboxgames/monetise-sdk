@@ -8,7 +8,6 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
 import org.json.JSONObject;
 
@@ -18,7 +17,6 @@ public class WebviewObject {
     private Context context;
     private String ClientId;
     private ViewGroup.LayoutParams webviewLayout;
-    private JamboxAdsHelper applovinHelper;
 
     public WebviewObject(Context context, String ClientId)
     {
@@ -41,7 +39,11 @@ public class WebviewObject {
             webview = new WebView(context);
             Activity activity = (Activity) context;
             //activity.setContentView(webview);
-            activity.addContentView(webview, webviewLayout);
+
+            FrameLayout.LayoutParams layout = (FrameLayout.LayoutParams)webviewLayout;
+            layout.bottomMargin = JamboxAdsHelper.GetBannerHeightInPx() + 20;
+
+            activity.addContentView(webview, layout);
         }
 
         WebSettings webSettings = webview.getSettings();
@@ -52,9 +54,6 @@ public class WebviewObject {
         webview.addJavascriptInterface(new WebAppInterface(this), "Unity");
         webview.loadUrl("https://jamgame.jambox.games/?channel_id=" + ClientId);
         webview.setVisibility(View.VISIBLE);
-
-        //Moving banner to front, if it is being shown
-        JamboxAdsHelper.MoveBannerToFront();
     }
 
     public void CloseWebview()

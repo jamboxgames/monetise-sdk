@@ -284,12 +284,10 @@ public class JamboxAdsHelper
         bannerAdView = null;
     }
 
-    public static void MoveBannerToFront()
+    public static int GetBannerHeightInPx()
     {
-        if (bannerAdView != null)
-        {
-            bannerAdView.bringToFront();
-        }
+        int dp = MaxAdFormat.BANNER.getAdaptiveSize( (Activity) context ).getHeight();
+        return AppLovinSdkUtils.dpToPx(context, dp);
     }
 
     public static class AdsCode
