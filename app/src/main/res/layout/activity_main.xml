@@ -49,44 +49,55 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <WebView
-        android:id="@+id/webview"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="120dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <Button
         android:id="@+id/banner_show"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="92dp"
+        android:layout_height="46dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="64dp"
-        android:text="BannerShow"
+        android:text="BShow"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/banner_hide"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="91dp"
+        android:layout_height="43dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="64dp"
-        android:layout_marginEnd="140dp"
-        android:text="BannerHide"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:text="BHide"
+        app:layout_constraintStart_toEndOf="@+id/banner_show"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/start_full"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="109dp"
+        android:layout_height="43dp"
         android:layout_marginTop="64dp"
-        android:text="StartFullscreen"
+        android:text="StartFull"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.673"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/native_ad_layout"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent">
+
+    </FrameLayout>
+
+    <Button
+        android:id="@+id/native_ad_btn"
+        android:layout_width="87dp"
+        android:layout_height="42dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="64dp"
+        android:layout_marginEnd="1dp"
+        android:text="Native"
+        app:layout_constraintEnd_toStartOf="@+id/start_full"
         app:layout_constraintStart_toEndOf="@+id/banner_hide"
         app:layout_constraintTop_toTopOf="parent" />
 

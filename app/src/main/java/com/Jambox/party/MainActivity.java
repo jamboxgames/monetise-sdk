@@ -14,16 +14,21 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.jambox.webview.JamboxAdsHelper;
+import com.jambox.webview.OnJamboxAdInitializeListener;
 import com.jambox.webview.OnRewardedAdListener;
 import com.jambox.webview.WebviewObject;
 
 public class MainActivity extends AppCompatActivity {
 
     private WebviewObject webview = null;
+    private AppOpenManager appOpenManager;
     private Context context;
     private String interstitialId = "0ee55073fd46cb13";
     private String rewardedId = "7d64a59befe5cef9";
     private String bannerId = "ba924c1fc44d29ac";
+    private String appOpenId = "fce5b3d0bbba9df0";
+    private String nativeId = "8d9bec8b94279ed6";
+
     private String h5ClientId = "9285717016";
 
     @Override
@@ -40,7 +45,19 @@ public class MainActivity extends AppCompatActivity {
         context = this;
 
         //Ad initialization
-        JamboxAdsHelper.InitializeAds(this, interstitialId, rewardedId, bannerId);
+        JamboxAdsHelper.InitializeAds(this, interstitialId, rewardedId, bannerId, new OnJamboxAdInitializeListener()
+                {
+                    @Override
+                    public void OnComplete()
+                    {
+                        //Initializing native
+                        JamboxAdsHelper.InitializeNativeAds(nativeId);
+
+                        //Initializing App Open Ad
+                        JamboxAdsHelper.InitializeAppOpenAds(appOpenId);
+                        appOpenManager = new AppOpenManager(context);
+                    }
+                });
 
         SetButtonListeners();
 
@@ -113,6 +130,16 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v)
             {
                 ShowBanner();
+            }
+        });
+
+        Button native_btn = findViewById(R.id.native_ad_btn);
+        native_btn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                JamboxAdsHelper.ShowNativeAd(findViewById(R.id.native_ad_layout));
             }
         });
 

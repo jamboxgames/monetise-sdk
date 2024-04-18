@@ -41,4 +41,5 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation(project(":JamboxWebview"))
+    implementation("androidx.lifecycle:lifecycle-process:2.2.0")
 }
