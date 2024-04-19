@@ -31,5 +31,5 @@ android {
 dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
-    implementation("com.applovin:applovin-sdk:12.4.0")
+    implementation("com.applovin:applovin-sdk:12.4.2")
 }

@@ -19,7 +19,6 @@ import com.applovin.mediation.ads.MaxAdView;
 import com.applovin.mediation.ads.MaxAppOpenAd;
 import com.applovin.mediation.ads.MaxInterstitialAd;
 import com.applovin.mediation.ads.MaxRewardedAd;
-import com.applovin.mediation.nativeAds.MaxNativeAd;
 import com.applovin.mediation.nativeAds.MaxNativeAdListener;
 import com.applovin.mediation.nativeAds.MaxNativeAdLoader;
 import com.applovin.mediation.nativeAds.MaxNativeAdView;
@@ -33,7 +32,7 @@ public class JamboxAdsHelper
 {
 
     public static boolean IsInitialized;
-    public static boolean IsInitializeCalled;
+    private static boolean IsInitializeCalled;
     private static Context context;
 
     //region INITIALIZE
@@ -52,7 +51,6 @@ public class JamboxAdsHelper
         JamboxAdsHelper.context = context;
 
         // Make sure to set the mediation provider value to "max" to ensure proper functionality
-        AppLovinSdk.getInstance(context).getSettings().setVerboseLogging(true);
         AppLovinSdk.getInstance(context).setMediationProvider("max");
         AppLovinSdk.getInstance(context).initializeSdk(new AppLovinSdk.SdkInitializationListener() {
             @Override
@@ -65,7 +63,7 @@ public class JamboxAdsHelper
                 JamboxAdsHelper.bannerId = bannerId;
                 if (listener !=null)
                 {
-                    listener.OnComplete();
+                    listener.OnJamboxAdsInitialized();
                 }
             }
         });
@@ -315,6 +313,11 @@ public class JamboxAdsHelper
         bannerAdView = null;
     }
 
+    public static boolean IsShowingBanner()
+    {
+        return bannerAdView != null && bannerAdView.isShown();
+    }
+
     public static int GetBannerHeightInPx()
     {
         int dp = MaxAdFormat.BANNER.getAdaptiveSize( (Activity) context ).getHeight();
@@ -327,16 +330,14 @@ public class JamboxAdsHelper
     private static MaxNativeAdLoader nativeAdLoader;
     private static MaxAd nativeAd;
 
-    public static void InitializeNativeAds(String nativeId)
+    public static void InitializeNativeAd(String nativeId)
     {
         JamboxAdsHelper.nativeId = nativeId;
     }
 
-    public static void ShowNativeAd(FrameLayout frameLayout)
+    public static void ShowNativeAd(FrameLayout frameLayout, NativeAdTemplate template)
     {
         if (!IsInitialized) return;
-
-        FrameLayout nativeAdContainer = frameLayout;
 
         nativeAdLoader = new MaxNativeAdLoader( nativeId, context );
         nativeAdLoader.setNativeAdListener( new MaxNativeAdListener()
@@ -345,8 +346,17 @@ public class JamboxAdsHelper
             public void onNativeAdLoaded(final MaxNativeAdView nativeAdView, final MaxAd ad)
             {
                 // Clean up any pre-existing native ad to prevent memory leaks.
-                System.out.println("~~~ here: " + (nativeAdView == null));
-                System.out.println("~~~ here: " + (nativeAdView == null));
+                if ( nativeAd != null )
+                {
+                    nativeAdLoader.destroy( nativeAd );
+                }
+
+                // Save ad for cleanup.
+                nativeAd = ad;
+
+                // Add ad view to view.
+                frameLayout.removeAllViews();
+                frameLayout.addView( nativeAdView );
             }
 
             @Override
@@ -362,7 +372,8 @@ public class JamboxAdsHelper
             }
         } );
 
-        nativeAdLoader.loadAd();
+        nativeAdLoader.loadAd(new MaxNativeAdView( (template == NativeAdTemplate.SMALL) ?
+                "small_template_1" : "medium_template_1", context));
     }
 
     public static void HideNativeAd()
@@ -377,6 +388,8 @@ public class JamboxAdsHelper
     //region APP OPEN
     private static MaxAppOpenAd appOpenAd;
     private static String appOpenId;
+    private static boolean isAppOpenLoading;
+    private static boolean showAppOpenOnLoad;
 
     public static void InitializeAppOpenAds(String appOpenAId)
     {
@@ -385,24 +398,40 @@ public class JamboxAdsHelper
         appOpenAd.setListener(new MaxAdListener()
         {
             @Override
-            public void onAdLoaded(@NonNull MaxAd maxAd) { }
+            public void onAdLoaded(@NonNull MaxAd maxAd)
+            {
+                isAppOpenLoading = false;
+                if (showAppOpenOnLoad)
+                {
+                    ShowAppOpenAd();
+                    showAppOpenOnLoad = false;
+                }
+            }
             @Override
             public void onAdDisplayed(@NonNull MaxAd maxAd) { }
             @Override
             public void onAdHidden(@NonNull MaxAd maxAd)
             {
+                isAppOpenLoading = true;
                 appOpenAd.loadAd();
             }
             @Override
             public void onAdClicked(@NonNull MaxAd maxAd) { }
             @Override
-            public void onAdLoadFailed(@NonNull String s, @NonNull MaxError maxError) { }
+            public void onAdLoadFailed(@NonNull String s, @NonNull MaxError maxError)
+            {
+                isAppOpenLoading = false;
+                showAppOpenOnLoad = false;
+            }
             @Override
             public void onAdDisplayFailed(@NonNull MaxAd maxAd, @NonNull MaxError maxError)
             {
+                isAppOpenLoading = true;
                 appOpenAd.loadAd();
             }
         });
+
+        isAppOpenLoading = true;
         appOpenAd.loadAd();
     }
 
@@ -412,12 +441,26 @@ public class JamboxAdsHelper
 
         if (appOpenAd.isReady())
         {
-            appOpenAd.showAd( appOpenId );
+            appOpenAd.showAd(appOpenId);
         }
         else
         {
-            appOpenAd.loadAd();
+            if (isAppOpenLoading)
+            {
+                showAppOpenOnLoad = true;
+            }
+            else
+            {
+                isAppOpenLoading = true;
+                appOpenAd.loadAd();
+            }
         }
+    }
+
+    public enum NativeAdTemplate
+    {
+        SMALL,
+        MEDIUM
     }
     //endregion
 

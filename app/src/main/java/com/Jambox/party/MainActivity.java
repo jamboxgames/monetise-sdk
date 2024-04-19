@@ -43,15 +43,18 @@ public class MainActivity extends AppCompatActivity {
         });
 
         context = this;
+        findViewById(R.id.main).setVisibility(View.GONE);
 
         //Ad initialization
         JamboxAdsHelper.InitializeAds(this, interstitialId, rewardedId, bannerId, new OnJamboxAdInitializeListener()
                 {
                     @Override
-                    public void OnComplete()
+                    public void OnJamboxAdsInitialized()
                     {
+                        findViewById(R.id.main).setVisibility(View.VISIBLE);
+
                         //Initializing native
-                        JamboxAdsHelper.InitializeNativeAds(nativeId);
+                        JamboxAdsHelper.InitializeNativeAd(nativeId);
 
                         //Initializing App Open Ad
                         JamboxAdsHelper.InitializeAppOpenAds(appOpenId);
@@ -79,31 +82,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v)
             {
-                StartWebview(false);
+                StartWebview();
             }
         });
 
-        Button start_full = findViewById(R.id.start_full);
-        start_full.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                StartWebview(true);
-            }
-        });
-
-        Button btn_close = findViewById(R.id.btn_close);
-        btn_close.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                CloseWebview();
-            }
-        });
-
-        Button rw_btn = findViewById(R.id.rw_btn);
+        Button rw_btn = findViewById(R.id.btn_rw);
         rw_btn.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -113,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button is_btn = findViewById(R.id.is_btn);
+        Button is_btn = findViewById(R.id.btn_is);
         is_btn.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -123,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button banner_show = findViewById(R.id.banner_show);
+        Button banner_show = findViewById(R.id.btn_banner_show);
         banner_show.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -133,17 +116,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button native_btn = findViewById(R.id.native_ad_btn);
-        native_btn.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                JamboxAdsHelper.ShowNativeAd(findViewById(R.id.native_ad_layout));
-            }
-        });
-
-        Button banner_hide = findViewById(R.id.banner_hide);
+        Button banner_hide = findViewById(R.id.btn_banner_hide);
         banner_hide.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -152,24 +125,51 @@ public class MainActivity extends AppCompatActivity {
                 HideBanner();
             }
         });
+
+        Button native_btn_small = findViewById(R.id.btn_native_small);
+        native_btn_small.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                findViewById(R.id.native_ad_small).setVisibility(View.VISIBLE);
+                JamboxAdsHelper.ShowNativeAd(findViewById(R.id.native_ad_small), JamboxAdsHelper.NativeAdTemplate.SMALL);
+            }
+        });
+
+        Button native_btn_medium = findViewById(R.id.btn_native_medium);
+        native_btn_medium.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                findViewById(R.id.native_ad_small).setVisibility(View.GONE);
+                JamboxAdsHelper.ShowNativeAd(findViewById(R.id.native_ad_medium), JamboxAdsHelper.NativeAdTemplate.MEDIUM);
+            }
+        });
+
+        Button native_btn_hide = findViewById(R.id.btn_native_hide);
+        native_btn_hide.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                ((FrameLayout)findViewById(R.id.native_ad_small)).removeAllViews();
+                ((FrameLayout)findViewById(R.id.native_ad_medium)).removeAllViews();
+                JamboxAdsHelper.HideNativeAd();
+            }
+        });
     }
 
-    void StartWebview(boolean fullscreen)
+    void StartWebview()
     {
         if (webview != null)
             return;
 
-        //H5 Games
-        if (fullscreen)
-        {
-            webview = new WebviewObject(this, h5ClientId);
-        }
-        else
-        {
-            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            layoutParams.setMargins(0, 300, 0, 0);
-            webview = new WebviewObject(this, h5ClientId, layoutParams);
-        }
+        webview = new WebviewObject(this, h5ClientId);
+        //FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        //layoutParams.setMargins(0, 300, 0, 0);
+        //webview = new WebviewObject(this, h5ClientId, layoutParams);
         webview.StartWebview();
     }
 

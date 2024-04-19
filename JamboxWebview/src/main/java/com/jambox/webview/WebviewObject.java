@@ -2,6 +2,7 @@ package com.jambox.webview;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
@@ -17,6 +18,7 @@ public class WebviewObject {
     private Context context;
     private String ClientId;
     private ViewGroup.LayoutParams webviewLayout;
+    private boolean isBannerOpenedByWebview = false;
 
     public WebviewObject(Context context, String ClientId)
     {
@@ -34,6 +36,12 @@ public class WebviewObject {
 
     public void StartWebview()
     {
+        if (!JamboxAdsHelper.IsInitialized)
+        {
+            Log.e("JamboxWebview", "ERROR: Please make sure JamboxAdsHelper is initialized before starting H5 Games");
+            return;
+        }
+
         if (webview == null)
         {
             webview = new WebView(context);
@@ -54,10 +62,22 @@ public class WebviewObject {
         webview.addJavascriptInterface(new WebAppInterface(this), "Unity");
         webview.loadUrl("https://jamgame.jambox.games/?channel_id=" + ClientId);
         webview.setVisibility(View.VISIBLE);
+
+        if (!JamboxAdsHelper.IsShowingBanner())
+        {
+            isBannerOpenedByWebview = true;
+            JamboxAdsHelper.ShowBannerAd(JamboxAdsHelper.BannerPosition.BOTTOM);
+        }
     }
 
     public void CloseWebview()
     {
+        if (isBannerOpenedByWebview)
+        {
+            isBannerOpenedByWebview = false;
+            JamboxAdsHelper.HideBannerAd();
+        }
+
         ((ViewGroup) webview.getParent()).removeView(webview);
         webview.destroy();
     }

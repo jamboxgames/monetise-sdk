@@ -12,16 +12,21 @@ import com.jambox.webview.JamboxAdsHelper;
 public class AppOpenManager implements LifecycleObserver
 {
     private final Context context;
+    private boolean isAppOpened = false;
 
     public AppOpenManager(final Context context)
     {
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
         this.context = context;
+        //JamboxAdsHelper.ShowAppOpenAd();
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     public void onStart()
     {
-        JamboxAdsHelper.ShowAppOpenAd();
+        if (isAppOpened)
+            JamboxAdsHelper.ShowAppOpenAd();
+        else
+            isAppOpened = true;
     }
 }
