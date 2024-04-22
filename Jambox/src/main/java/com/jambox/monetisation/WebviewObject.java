@@ -1,4 +1,4 @@
-package com.jambox.webview;
+package com.jambox.monetisation;
 
 import android.app.Activity;
 import android.content.Context;

@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "WebviewGame2"
 include(":app")
-include(":JamboxWebview")
+include(":Jambox")

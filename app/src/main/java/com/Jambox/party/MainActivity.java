@@ -3,7 +3,6 @@ package com.Jambox.party;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 
@@ -13,10 +12,10 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.jambox.webview.JamboxAdsHelper;
-import com.jambox.webview.OnJamboxAdInitializeListener;
-import com.jambox.webview.OnRewardedAdListener;
-import com.jambox.webview.WebviewObject;
+import com.jambox.monetisation.JamboxAdsHelper;
+import com.jambox.monetisation.OnJamboxAdInitializeListener;
+import com.jambox.monetisation.OnRewardedAdListener;
+import com.jambox.monetisation.WebviewObject;
 
 public class MainActivity extends AppCompatActivity {
 

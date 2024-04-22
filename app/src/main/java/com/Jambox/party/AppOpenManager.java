@@ -7,7 +7,7 @@ import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
-import com.jambox.webview.JamboxAdsHelper;
+import com.jambox.monetisation.JamboxAdsHelper;
 
 public class AppOpenManager implements LifecycleObserver
 {

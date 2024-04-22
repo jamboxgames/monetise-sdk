@@ -1,6 +1,5 @@
-package com.jambox.webview;
+package com.jambox.monetisation;
 
-import android.content.Context;
 import android.webkit.JavascriptInterface;
 
 public class WebAppInterface {

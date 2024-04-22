@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "com.jambox.webview"
+    namespace = "com.jambox.monetisation"
     compileSdk = 34
 
     defaultConfig {
