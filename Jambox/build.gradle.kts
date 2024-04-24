@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.androidLibrary)
+    id("maven-publish")
 }
 
 android {
@@ -32,4 +33,18 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     implementation("com.applovin:applovin-sdk:12.4.2")
+}
+
+publishing {
+    publications {
+        register<MavenPublication>("release") {
+            groupId = "com.github.jambox"
+            artifactId = "jambox-monetisation"
+            version = "1.0"
+
+            afterEvaluate {
+                from(components.findByName("release"))
+            }
+        }
+    }
 }

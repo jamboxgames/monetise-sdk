@@ -309,8 +309,15 @@ public class JamboxAdsHelper
         if (bannerAdView == null)
             return;
 
-        bannerAdView.destroy();
-        bannerAdView = null;
+        AppLovinSdkUtils.runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                bannerAdView.destroy();
+                bannerAdView = null;
+            }
+        });
     }
 
     public static boolean IsShowingBanner()
