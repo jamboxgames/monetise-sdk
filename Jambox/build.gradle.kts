@@ -35,15 +35,26 @@ dependencies {
     implementation("com.applovin:applovin-sdk:12.4.2")
 }
 
-publishing {
-    publications {
-        register<MavenPublication>("release") {
-            groupId = "com.github.jambox"
-            artifactId = "jambox-monetisation"
-            version = "1.0"
+android {
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
+}
 
-            afterEvaluate {
-                from(components.findByName("release"))
+afterEvaluate {
+    publishing {
+        publications {
+            register<MavenPublication>("release") {
+                groupId = "com.github.jambox"
+                artifactId = "jambox-monetisation"
+                version = "1.0"
+
+                from(components["release"])
+
+                artifact("$buildDir/outputs/aar/Jambox-release.aar")
             }
         }
     }
