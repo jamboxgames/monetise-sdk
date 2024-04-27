@@ -48,13 +48,13 @@ afterEvaluate {
     publishing {
         publications {
             register<MavenPublication>("release") {
-                groupId = "com.github.jambox"
+                groupId = "com.github.jamboxgames"
                 artifactId = "jambox-monetisation"
                 version = "1.0"
 
                 from(components["release"])
 
-                artifact("$buildDir/outputs/aar/Jambox-release.aar")
+                //artifact("$buildDir/outputs/aar/Jambox-release.aar")
             }
         }
     }
