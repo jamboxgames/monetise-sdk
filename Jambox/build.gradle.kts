@@ -50,7 +50,7 @@ afterEvaluate {
             register<MavenPublication>("release") {
                 groupId = "com.github.jamboxgames"
                 artifactId = "monetise-sdk"
-                version = "1.0.7"
+                version = "1.0"
 
                 from(components["release"])
 
