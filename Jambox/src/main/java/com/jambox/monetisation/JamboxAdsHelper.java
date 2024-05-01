@@ -471,6 +471,11 @@ public class JamboxAdsHelper
     }
     //endregion
 
+    public static void ShowMediationDebugger()
+    {
+        AppLovinSdk.getInstance(context).showMediationDebugger();
+    }
+
     public static class AdsCode
     {
         public static final int BEFORE_ADS_SHOWN = 100;

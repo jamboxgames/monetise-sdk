@@ -50,12 +50,11 @@ afterEvaluate {
             register<MavenPublication>("release") {
                 groupId = "com.github.jamboxgames"
                 artifactId = "monetise-sdk"
-                version = "1.0"
+                version = "1.0.1"
 
                 from(components["release"])
 
-                //com.github.jamboxgames:monetise-sdk:1.0.7
-                //artifact("$buildDir/outputs/aar/Jambox-release.aar")
+                //com.github.jamboxgames:monetise-sdk:1.0.1
             }
         }
     }

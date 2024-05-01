@@ -158,6 +158,16 @@ public class MainActivity extends AppCompatActivity {
                 JamboxAdsHelper.HideNativeAd();
             }
         });
+
+        Button mediation_btn = findViewById(R.id.btn_mediation);
+        mediation_btn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                JamboxAdsHelper.ShowMediationDebugger();
+            }
+        });
     }
 
     void StartWebview()
