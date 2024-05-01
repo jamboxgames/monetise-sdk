@@ -37,6 +37,8 @@ dependencies {
     implementation("com.applovin.mediation:chartboost-adapter:+")
     implementation("com.google.android.gms:play-services-base:16.1.0")
     implementation("com.applovin.mediation:fyber-adapter:+")
+    implementation("com.applovin.mediation:google-ad-manager-adapter:+")
+    implementation("com.applovin.mediation:google-adapter:+")
     implementation("com.applovin.mediation:inmobi-adapter:+")
     implementation("com.squareup.picasso:picasso:2.71828")
     implementation("androidx.recyclerview:recyclerview:1.1.0")
@@ -66,11 +68,11 @@ afterEvaluate {
             register<MavenPublication>("release") {
                 groupId = "com.github.jamboxgames"
                 artifactId = "monetise-sdk"
-                version = "1.0.2"
+                version = "1.0.3"
 
                 from(components["release"])
 
-                //com.github.jamboxgames:monetise-sdk:1.0.2
+                //com.github.jamboxgames:monetise-sdk:1.0.3
             }
         }
     }
