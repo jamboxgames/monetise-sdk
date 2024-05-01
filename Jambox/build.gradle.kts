@@ -32,7 +32,23 @@ android {
 dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
-    implementation("com.applovin:applovin-sdk:12.4.2")
+
+    implementation("com.applovin:applovin-sdk:+")
+    implementation("com.applovin.mediation:chartboost-adapter:+")
+    implementation("com.google.android.gms:play-services-base:16.1.0")
+    implementation("com.applovin.mediation:fyber-adapter:+")
+    implementation("com.applovin.mediation:inmobi-adapter:+")
+    implementation("com.squareup.picasso:picasso:2.71828")
+    implementation("androidx.recyclerview:recyclerview:1.1.0")
+    implementation("com.applovin.mediation:ironsource-adapter:+")
+    implementation("com.applovin.mediation:vungle-adapter:+")
+    implementation("com.applovin.mediation:facebook-adapter:+")
+    implementation("com.applovin.mediation:mintegral-adapter:+")
+    implementation("com.applovin.mediation:bytedance-adapter:+")
+    implementation("com.applovin.mediation:smaato-adapter:+")
+    implementation("com.applovin.mediation:unityads-adapter:+")
+    implementation("com.applovin.mediation:verve-adapter:+")
+    implementation("com.applovin.mediation:yandex-adapter:+")
 }
 
 android {
