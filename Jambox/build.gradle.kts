@@ -44,7 +44,7 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.1.0")
     implementation("com.applovin.mediation:ironsource-adapter:8.0.0.0.0")
     implementation("com.applovin.mediation:vungle-adapter:+")
-    implementation("com.applovin.mediation:facebook-adapter:6.16.0.2'")
+    implementation("com.applovin.mediation:facebook-adapter:6.16.0.2")
     implementation("com.applovin.mediation:mintegral-adapter:16.7.31.0")
     implementation("com.applovin.mediation:bytedance-adapter:+")
     implementation("com.applovin.mediation:smaato-adapter:22.6.1.0")

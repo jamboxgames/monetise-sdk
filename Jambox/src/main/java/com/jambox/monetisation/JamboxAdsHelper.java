@@ -233,7 +233,7 @@ public class JamboxAdsHelper
     public static void ShowRewarded(OnRewardedAdListener _rewardedAdListener)
     {
         if (!IsInitialized) {
-            _rewardedAdListener.OnAdDisplayFailed();
+            if(_rewardedAdListener != null) _rewardedAdListener.OnAdDisplayFailed();
             return;
         };
 
@@ -244,7 +244,7 @@ public class JamboxAdsHelper
             rewardedAd.showAd();
         }
         else {
-            _rewardedAdListener.OnAdDisplayFailed();
+            if(_rewardedAdListener != null) _rewardedAdListener.OnAdDisplayFailed();
         }
     }
     //endregion
