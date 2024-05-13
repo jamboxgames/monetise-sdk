@@ -4,12 +4,12 @@ plugins {
 
 android {
     namespace = "com.Jambox.party"
-    compileSdk = 34
+    compileSdk = 33
 
     defaultConfig {
         applicationId = "com.Jambox.social.live.party"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 

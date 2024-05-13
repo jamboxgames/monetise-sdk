@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.jambox.monetisation"
-    compileSdk = 34
+    compileSdk = 33
 
     defaultConfig {
         minSdk = 21
@@ -33,20 +33,20 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
 
-    implementation("com.applovin:applovin-sdk:+")
+    implementation("com.applovin:applovin-sdk:12.4.3")
     implementation("com.applovin.mediation:chartboost-adapter:9.7.0.0")
     implementation("com.google.android.gms:play-services-base:16.1.0")
-    implementation("com.applovin.mediation:fyber-adapter:+")
-    implementation("com.applovin.mediation:google-ad-manager-adapter:+")
+    implementation("com.applovin.mediation:fyber-adapter:8.2.7.1")
+    implementation("com.applovin.mediation:google-ad-manager-adapter:22.6.0.0")
     implementation("com.applovin.mediation:google-adapter:22.6.0.0")
     implementation("com.applovin.mediation:inmobi-adapter:10.6.7.0")
     implementation("com.squareup.picasso:picasso:2.71828")
     implementation("androidx.recyclerview:recyclerview:1.1.0")
     implementation("com.applovin.mediation:ironsource-adapter:8.0.0.0.0")
-    implementation("com.applovin.mediation:vungle-adapter:+")
+    implementation("com.applovin.mediation:vungle-adapter:7.3.2.0")
     implementation("com.applovin.mediation:facebook-adapter:6.16.0.2")
     implementation("com.applovin.mediation:mintegral-adapter:16.7.31.0")
-    implementation("com.applovin.mediation:bytedance-adapter:+")
+    implementation("com.applovin.mediation:bytedance-adapter:5.9.0.5.0")
     implementation("com.applovin.mediation:smaato-adapter:22.6.1.0")
     implementation("com.applovin.mediation:unityads-adapter:4.9.3.0")
     implementation("com.applovin.mediation:verve-adapter:3.0.0.0")
