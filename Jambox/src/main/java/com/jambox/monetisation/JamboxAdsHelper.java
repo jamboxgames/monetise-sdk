@@ -232,13 +232,19 @@ public class JamboxAdsHelper
 
     public static void ShowRewarded(OnRewardedAdListener _rewardedAdListener)
     {
-        if (!IsInitialized) return;
+        if (!IsInitialized) {
+            _rewardedAdListener.OnAdDisplayFailed();
+            return;
+        };
 
         rewardedAdListener = null;
         if (rewardedAd.isReady())
         {
             rewardedAdListener = _rewardedAdListener;
             rewardedAd.showAd();
+        }
+        else {
+            _rewardedAdListener.OnAdDisplayFailed();
         }
     }
     //endregion
