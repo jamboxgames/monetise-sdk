@@ -10,6 +10,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
+import com.google.android.gms.common.util.Strings;
+
 import org.json.JSONObject;
 
 public class WebviewObject {
@@ -17,6 +19,8 @@ public class WebviewObject {
     private WebView webview;
     private Context context;
     private String ClientId;
+    private boolean isDirectGame;
+    private boolean isWebviewDestroyed = false;
     private ViewGroup.LayoutParams webviewLayout;
     private boolean isBannerOpenedByWebview = false;
 
@@ -35,6 +39,16 @@ public class WebviewObject {
     }
 
     public void StartWebview()
+    {
+        InternalStartWebview("");
+    }
+
+    public void StartWebviewGame(String gameId)
+    {
+        InternalStartWebview(gameId);
+    }
+
+    private void InternalStartWebview(String gameId)
     {
         if (!JamboxAdsHelper.IsInitialized)
         {
@@ -58,9 +72,25 @@ public class WebviewObject {
         webSettings.setDomStorageEnabled(true);
         webSettings.setJavaScriptEnabled(true);
 
-        webview.setWebViewClient(new WebViewClient());
+        isDirectGame = !Strings.isEmptyOrWhitespace(gameId);
+        String loadUrl = "";
+        if (isDirectGame)
+        {
+            loadUrl = "https://jamgame.jambox.games/?channel_id=" + ClientId + "&game_id=" + gameId;
+            //loadUrl = "http://10.0.2.2/?channel_id=" + ClientId + "&game_id=" + gameId;
+        }
+        else
+        {
+            loadUrl = "https://jamgame.jambox.games/?channel_id=" + ClientId;
+            //loadUrl = "http://10.0.2.2/?channel_id=" + ClientId;
+        }
+
+        //webview.clearCache(true);
+        JamboxWebviewClient webviewClient = new JamboxWebviewClient();
+        webviewClient.Initialize(loadUrl, isDirectGame, this);
+        webview.setWebViewClient(webviewClient);
         webview.addJavascriptInterface(new WebAppInterface(this), "Unity");
-        webview.loadUrl("https://jamgame.jambox.games/?channel_id=" + ClientId);
+        webview.loadUrl(loadUrl);
         webview.setVisibility(View.VISIBLE);
 
         if (!JamboxAdsHelper.IsShowingBanner())
@@ -68,6 +98,26 @@ public class WebviewObject {
             isBannerOpenedByWebview = true;
             JamboxAdsHelper.ShowBannerAd(JamboxAdsHelper.BannerPosition.BOTTOM);
         }
+    }
+
+    public void BackWebview()
+    {
+        if (isDirectGame)
+        {
+            CloseWebview();
+        }
+        else
+        {
+            if (CanGoBack())
+                webview.goBack();
+            else
+                CloseWebview();
+        }
+    }
+
+    public boolean CanGoBack()
+    {
+        return webview.canGoBack();
     }
 
     public void CloseWebview()
@@ -80,6 +130,12 @@ public class WebviewObject {
 
         ((ViewGroup) webview.getParent()).removeView(webview);
         webview.destroy();
+        isWebviewDestroyed = true;
+    }
+
+    public boolean IsWebviewDestroyed()
+    {
+        return isWebviewDestroyed;
     }
 
     public void WebviewCallback(String msg)
@@ -150,6 +206,46 @@ public class WebviewObject {
             System.out.println("Error Json: " + e);
             return "";
         }
+    }
+
+}
+
+class JamboxWebviewClient extends WebViewClient {
+
+    private String originUrl;
+    private boolean directGame;
+    private WebviewObject webviewObject;
+
+    public void Initialize(String originUrl, boolean directGame, WebviewObject webviewObject)
+    {
+        this.originUrl = originUrl;
+        this.directGame = directGame;
+        this.webviewObject = webviewObject;
+    }
+
+    private int originCount = 0;
+    @Override
+    public void doUpdateVisitedHistory(WebView view, String url, boolean isReload)
+    {
+        if (url.equals(originUrl) && directGame)
+        {
+            if (originCount <= 0)
+                originCount++;
+            else
+                webviewObject.CloseWebview();
+        }
+        super.doUpdateVisitedHistory(view, url, isReload);
+    }
+
+    @Override
+    public void onPageFinished(WebView view, String url)
+    {
+        if (url.equals(originUrl) && !directGame)
+        {
+            //clearing history, so that goBack() works properly
+            view.clearHistory();
+        }
+        super.onPageFinished(view, url);
     }
 
 }

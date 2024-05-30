@@ -51,6 +51,16 @@ dependencies {
     implementation("com.applovin.mediation:unityads-adapter:4.9.3.0")
     implementation("com.applovin.mediation:verve-adapter:3.0.0.0")
     implementation("com.applovin.mediation:yandex-adapter:7.0.1.0")
+
+    //Adjust
+    implementation("com.adjust.sdk:adjust-android:4.38.3")
+    implementation("com.android.installreferrer:installreferrer:2.2")
+
+    // Add the following if you are using the Adjust SDK inside web views on your app
+    //implementation("com.adjust.sdk:adjust-android-webbridge:4.38.3")
+
+    //mplementation("com.google.android.gms:play-services-ads-identifier:18.0.1")
+    //implementation("com.google.android.gms:play-services-appset:16.0.2")
 }
 
 android {

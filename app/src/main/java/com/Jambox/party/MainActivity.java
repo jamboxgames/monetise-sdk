@@ -12,6 +12,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.jambox.monetisation.AdjustHelper;
 import com.jambox.monetisation.JamboxAdsHelper;
 import com.jambox.monetisation.OnJamboxAdInitializeListener;
 import com.jambox.monetisation.OnRewardedAdListener;
@@ -43,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
 
         context = this;
         findViewById(R.id.main).setVisibility(View.GONE);
+        //Test app open event
+        AdjustHelper.TrackEvent("svtdhn");
 
         //Ad initialization
         JamboxAdsHelper.InitializeAds(this, interstitialId, rewardedId, bannerId, new OnJamboxAdInitializeListener()
@@ -179,7 +182,9 @@ public class MainActivity extends AppCompatActivity {
         //FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         //layoutParams.setMargins(0, 300, 0, 0);
         //webview = new WebviewObject(this, h5ClientId, layoutParams);
+
         webview.StartWebview();
+        //webview.StartWebviewGame("40-shark-riders");
     }
 
     void CloseWebview()
@@ -222,6 +227,15 @@ public class MainActivity extends AppCompatActivity {
     void ShowIS()
     {
         JamboxAdsHelper.ShowRewarded(null);
+    }
+
+    protected void onResume() {
+        super.onResume();
+        AdjustHelper.onResume();
+    }
+    protected void onPause() {
+        super.onPause();
+        AdjustHelper.onPause();
     }
 
 }
