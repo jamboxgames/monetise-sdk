@@ -1,6 +1,8 @@
 package com.jambox.monetisation;
 
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 
 import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustConfig;
@@ -8,12 +10,21 @@ import com.adjust.sdk.AdjustEvent;
 
 public class AdjustHelper
 {
-    public static void Initialize(Context context, String appToken, AdjustEnv env)
+    public static void Initialize(Context context)
     {
-        String environment = AdjustConfig.ENVIRONMENT_PRODUCTION;
-        if (env == AdjustEnv.ENVIRONMENT_SANDBOX)
-            environment = AdjustConfig.ENVIRONMENT_SANDBOX;
-        AdjustConfig config = new AdjustConfig(context, appToken, environment);
+        ApplicationInfo applicationInfo = null;
+        try
+        {
+            applicationInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+        }
+        catch (PackageManager.NameNotFoundException e)
+        {
+            System.out.println("ERROR: Adjust Initialization failed : " + e);
+            return;
+        }
+
+        String appToken = applicationInfo.metaData.getString("adjust_app_token");
+        AdjustConfig config = new AdjustConfig(context, appToken, AdjustConfig.ENVIRONMENT_PRODUCTION);
         Adjust.onCreate(config);
     }
 

@@ -14,6 +14,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.jambox.monetisation.AdjustHelper;
 import com.jambox.monetisation.JamboxAdsHelper;
+import com.jambox.monetisation.JamboxGameKeys;
 import com.jambox.monetisation.OnJamboxAdInitializeListener;
 import com.jambox.monetisation.OnRewardedAdListener;
 import com.jambox.monetisation.WebviewObject;
@@ -183,8 +184,8 @@ public class MainActivity extends AppCompatActivity {
         //layoutParams.setMargins(0, 300, 0, 0);
         //webview = new WebviewObject(this, h5ClientId, layoutParams);
 
-        webview.StartWebview();
-        //webview.StartWebviewGame("40-shark-riders");
+        //webview.StartWebview();
+        webview.StartWebviewGame(JamboxGameKeys.flip_jump);
     }
 
     void CloseWebview()

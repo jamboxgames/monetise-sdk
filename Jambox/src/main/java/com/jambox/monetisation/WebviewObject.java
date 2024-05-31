@@ -43,9 +43,9 @@ public class WebviewObject {
         InternalStartWebview("");
     }
 
-    public void StartWebviewGame(String gameId)
+    public void StartWebviewGame(JamboxGameKeys gameId)
     {
-        InternalStartWebview(gameId);
+        InternalStartWebview(gameId.GetGameId());
     }
 
     private void InternalStartWebview(String gameId)
