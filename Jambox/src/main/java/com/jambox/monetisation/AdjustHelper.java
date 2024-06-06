@@ -10,20 +10,8 @@ import com.adjust.sdk.AdjustEvent;
 
 public class AdjustHelper
 {
-    public static void Initialize(Context context)
+    public static void Initialize(Context context, String appToken)
     {
-        ApplicationInfo applicationInfo = null;
-        try
-        {
-            applicationInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
-        }
-        catch (PackageManager.NameNotFoundException e)
-        {
-            System.out.println("ERROR: Adjust Initialization failed : " + e);
-            return;
-        }
-
-        String appToken = applicationInfo.metaData.getString("adjust_app_token");
         AdjustConfig config = new AdjustConfig(context, appToken, AdjustConfig.ENVIRONMENT_PRODUCTION);
         Adjust.onCreate(config);
     }
