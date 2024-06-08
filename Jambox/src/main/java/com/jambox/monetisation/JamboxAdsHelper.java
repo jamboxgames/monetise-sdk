@@ -1,11 +1,14 @@
 package com.jambox.monetisation;
 
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.app.Activity;
 import android.content.Context;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import com.applovin.mediation.MaxAd;
@@ -35,6 +38,9 @@ public class JamboxAdsHelper
     private static boolean IsInitializeCalled;
     private static Context context;
 
+    private static String jamboxKey = "T7PPns0K6JV00uGv0ZAEKsTWrpwA-N4Hchi_KKecaqTa_U5zQcyyoI_pTcC5TM1OgfrLz5dWGdASKWgK6l5Sks";
+    private static String applovinKey = "";
+
     //region INITIALIZE
     public static void InitializeAds(Context context, String interstitialId, String rewardedId, String bannerId)
     {
@@ -47,8 +53,23 @@ public class JamboxAdsHelper
         if (IsInitializeCalled)
             return;
 
-        IsInitializeCalled = true;
+        ApplicationInfo applicationInfo = null;
+        try
+        {
+            applicationInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+        }
+        catch (PackageManager.NameNotFoundException e)
+        {
+            System.out.println("ERROR: Ads Initialization failed : " + e);
+            return;
+        }
+        applovinKey = applicationInfo.metaData.getString("applovin.sdk.key");
+
         JamboxAdsHelper.context = context;
+        if (!IsSdkKeyValid())
+            return;
+
+        IsInitializeCalled = true;
 
         // Make sure to set the mediation provider value to "max" to ensure proper functionality
         AppLovinSdk.getInstance(context).setMediationProvider("max");
@@ -69,6 +90,21 @@ public class JamboxAdsHelper
         });
     }
     //endregion
+
+    private static boolean IsSdkKeyValid()
+    {
+        if (applovinKey.equals(jamboxKey))
+        {
+            return true;
+        }
+        else
+        {
+            if (context != null)
+                Toast.makeText(context, "Please use the applovin SDK key provided by Jambox Games", Toast.LENGTH_SHORT).show();
+            System.out.println("ERROR: Ads Initialization failed : Please use the applovin SDK key provided by Jambox Games");
+            return false;
+        }
+    }
 
     //region INTERSTITIAL
     private static MaxInterstitialAd interstitialAd;
@@ -143,6 +179,7 @@ public class JamboxAdsHelper
 
     public static void ShowInterstitial(OnInterstitialAdListener _interstitialAdListener)
     {
+        if (!IsSdkKeyValid()) return;
         if (!IsInitialized) return;
 
         interstitialAdListener = null;
@@ -232,6 +269,8 @@ public class JamboxAdsHelper
 
     public static void ShowRewarded(OnRewardedAdListener _rewardedAdListener)
     {
+        if (!IsSdkKeyValid()) return;
+
         if (!IsInitialized) {
             if(_rewardedAdListener != null) _rewardedAdListener.OnAdDisplayFailed();
             return;
@@ -254,6 +293,7 @@ public class JamboxAdsHelper
     private static MaxAdView bannerAdView;
     public static void ShowBannerAd(BannerPosition position)
     {
+        if (!IsSdkKeyValid()) return;
         if (!IsInitialized) return;
 
         if (bannerAdView != null && bannerAdView.isShown())
@@ -345,11 +385,13 @@ public class JamboxAdsHelper
 
     public static void InitializeNativeAd(String nativeId)
     {
+        if (!IsSdkKeyValid()) return;
         JamboxAdsHelper.nativeId = nativeId;
     }
 
     public static void ShowNativeAd(FrameLayout frameLayout, NativeAdTemplate template)
     {
+        if (!IsSdkKeyValid()) return;
         if (!IsInitialized) return;
 
         nativeAdLoader = new MaxNativeAdLoader( nativeId, context );
@@ -406,6 +448,7 @@ public class JamboxAdsHelper
 
     public static void InitializeAppOpenAds(String appOpenAId)
     {
+        if (!IsSdkKeyValid()) return;
         JamboxAdsHelper.appOpenId = appOpenAId;
         appOpenAd = new MaxAppOpenAd( appOpenAId, context);
         appOpenAd.setListener(new MaxAdListener()
@@ -450,6 +493,7 @@ public class JamboxAdsHelper
 
     public static void ShowAppOpenAd()
     {
+        if (!IsSdkKeyValid()) return;
         if (appOpenAd == null || !IsInitialized) return;
 
         if (appOpenAd.isReady())
@@ -479,6 +523,7 @@ public class JamboxAdsHelper
 
     public static void ShowMediationDebugger()
     {
+        if (!IsSdkKeyValid()) return;
         AppLovinSdk.getInstance(context).showMediationDebugger();
     }
 
