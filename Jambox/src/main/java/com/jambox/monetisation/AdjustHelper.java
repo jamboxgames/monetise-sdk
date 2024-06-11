@@ -1,8 +1,6 @@
 package com.jambox.monetisation;
 
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 
 import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustConfig;

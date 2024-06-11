@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace = "com.Jambox.party"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.Jambox.social.live.party"
@@ -42,4 +42,5 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation(project(":Jambox"))
     implementation("androidx.lifecycle:lifecycle-process:2.2.0")
+    implementation("androidx.activity:activity-compose:1.9.0")
 }
