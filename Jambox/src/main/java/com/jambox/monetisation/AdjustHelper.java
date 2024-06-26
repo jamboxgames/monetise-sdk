@@ -10,6 +10,7 @@ public class AdjustHelper
 {
     public static void Initialize(Context context, String appToken)
     {
+        JamboxLog.Info("Initializing Adjust with appToken : " + appToken);
         AdjustConfig config = new AdjustConfig(context, appToken, AdjustConfig.ENVIRONMENT_PRODUCTION);
         Adjust.onCreate(config);
     }

@@ -229,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
 
     void ShowIS()
     {
-        JamboxAdsHelper.ShowRewarded(null);
+        JamboxAdsHelper.ShowInterstitial(null);
     }
 
     protected void onResume() {
