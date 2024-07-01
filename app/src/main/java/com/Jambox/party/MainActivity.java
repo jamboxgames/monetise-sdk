@@ -15,6 +15,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.jambox.monetisation.AdjustHelper;
 import com.jambox.monetisation.JamboxAdsHelper;
+import com.jambox.monetisation.JamboxData;
 import com.jambox.monetisation.JamboxGameKeys;
 import com.jambox.monetisation.OnJamboxAdInitializeListener;
 import com.jambox.monetisation.OnRewardedAdListener;
@@ -51,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         AdjustHelper.TrackEvent("svtdhn");
 
         //Ad initialization
-        JamboxAdsHelper.InitializeAds(this, interstitialId, rewardedId, bannerId, new OnJamboxAdInitializeListener()
+        JamboxAdsHelper.InitializeAds(this, new OnJamboxAdInitializeListener()
                 {
                     @Override
                     public void OnJamboxAdsInitialized()
@@ -181,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
         if (webview != null)
             return;
 
-        webview = new WebviewObject(this, h5ClientId);
+        webview = new WebviewObject(this);
         //FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         //layoutParams.setMargins(0, 300, 0, 0);
         //webview = new WebviewObject(this, h5ClientId, layoutParams);

@@ -33,7 +33,6 @@ import com.applovin.mediation.nativeAds.MaxNativeAdView;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkUtils;
-
 import java.util.concurrent.TimeUnit;
 
 public class JamboxAdsHelper
@@ -41,22 +40,21 @@ public class JamboxAdsHelper
 
     public static boolean IsInitialized;
     private static boolean IsInitializeCalled;
+    private static OnJamboxAdInitializeListener adInitializeListener;
     private static Context context;
 
     private static String jamboxKey = "T7PPns0K6JV00uGv0ZAEKsTWrpwA-N4Hchi_KKecaqTa_U5zQcyyoI_pTcC5TM1OgfrLz5dWGdASKWgK6l5Sks";
     private static String applovinKey = "";
-
     public static int statusBarPadding;
     public static int navigationBarPadding;
 
     //region INITIALIZE
-    public static void InitializeAds(Context context, String interstitialId, String rewardedId, String bannerId)
+    public static void InitializeAds(Context context)
     {
-        InitializeAds(context, interstitialId, rewardedId, bannerId, null);
+        InitializeAds(context, null);
     }
 
-    public static void InitializeAds(Context context, String interstitialId, String rewardedId,
-                                     String bannerId, OnJamboxAdInitializeListener listener)
+    public static void InitializeAds(Context context, OnJamboxAdInitializeListener listener)
     {
         if (IsInitializeCalled)
             return;
@@ -92,8 +90,24 @@ public class JamboxAdsHelper
         JamboxAdsHelper.context = context;
         if (!IsSdkKeyValid())
             return;
-
+        adInitializeListener = listener;
         IsInitializeCalled = true;
+
+        //JamboxLog.Info("Fecthing Ad Ids...");
+        //new FetchData().execute("https://aliendro.id/demo/guide_json/data.json");
+
+        //if not data fetched, it will be called after data fetch
+        if (JamboxData.IsDataFetchCompleted)
+            OnDataFetched();
+        else
+            JamboxLog.Info("Waiting for data fetch...");
+    }
+
+    static void OnDataFetched()
+    {
+        //Data received from server, but the user have not initialized the sdk
+        if (!IsInitializeCalled)
+            return;
 
         // Make sure to set the mediation provider value to "max" to ensure proper functionality
         AppLovinSdk.getInstance(context).setMediationProvider("max");
@@ -104,12 +118,11 @@ public class JamboxAdsHelper
                 JamboxLog.Info("Ads Initialized");
                 JamboxLog.Info("Loading Ads...");
                 IsInitialized = true;
-                InitializeInterstitial(context, interstitialId);
-                InitializeRewarded(context, rewardedId);
-                JamboxAdsHelper.bannerId = bannerId;
-                if (listener !=null)
+                InitializeInterstitial(context);
+                InitializeRewarded(context);
+                if (adInitializeListener !=null)
                 {
-                    listener.OnJamboxAdsInitialized();
+                    adInitializeListener.OnJamboxAdsInitialized();
                 }
             }
         });
@@ -136,9 +149,9 @@ public class JamboxAdsHelper
     private static OnInterstitialAdListener interstitialAdListener;
     private static boolean IsInvalidInterstitialId = false;
     private static int interstitialRetryAttempt = 0;
-    private static void InitializeInterstitial(Context context, String interstitialId)
+    private static void InitializeInterstitial(Context context)
     {
-        interstitialAd = new MaxInterstitialAd( interstitialId, (Activity) context );
+        interstitialAd = new MaxInterstitialAd( JamboxData.interstitialId, (Activity) context );
         interstitialAd.setListener(new MaxAdListener()
         {
             @Override
@@ -254,9 +267,9 @@ public class JamboxAdsHelper
     private static OnRewardedAdListener rewardedAdListener;
     private static boolean IsInvalidRewardedId = false;
     private static int rewardedRetryAttempt = 0;
-    private static void InitializeRewarded(Context context, String rewardedId)
+    private static void InitializeRewarded(Context context)
     {
-        rewardedAd = MaxRewardedAd.getInstance( rewardedId, (Activity) context );
+        rewardedAd = MaxRewardedAd.getInstance( JamboxData.rewardedId, (Activity) context );
         rewardedAd.setListener(new MaxRewardedAdListener()
         {
             @Override
@@ -373,7 +386,6 @@ public class JamboxAdsHelper
     //endregion
 
     //region BANNER
-    private static String bannerId;
     private static MaxAdView bannerAdView;
     private static boolean IsInvalidBannerId = false;
     public static void ShowBannerAd(BannerPosition position)
@@ -397,7 +409,7 @@ public class JamboxAdsHelper
             return;
         }
 
-        bannerAdView = new MaxAdView(bannerId, context);
+        bannerAdView = new MaxAdView(JamboxData.bannerId, context);
         bannerAdView.setListener(new MaxAdViewAdListener()
         {
             @Override
@@ -503,7 +515,6 @@ public class JamboxAdsHelper
     //endregion
 
     //region NATIVE
-    private static String nativeId;
     private static MaxNativeAdLoader nativeAdLoader;
     private static MaxAd nativeAd;
     private static boolean IsInvalidNativeId = false;
@@ -511,7 +522,6 @@ public class JamboxAdsHelper
     public static void InitializeNativeAd(String nativeId)
     {
         if (!IsSdkKeyValid()) return;
-        JamboxAdsHelper.nativeId = nativeId;
     }
 
     public static void ShowNativeAd(FrameLayout frameLayout, NativeAdTemplate template)
@@ -529,7 +539,7 @@ public class JamboxAdsHelper
             return;
         }
 
-        nativeAdLoader = new MaxNativeAdLoader( nativeId, context );
+        nativeAdLoader = new MaxNativeAdLoader( JamboxData.nativeId, context );
         nativeAdLoader.setNativeAdListener( new MaxNativeAdListener()
         {
             @Override
@@ -591,7 +601,6 @@ public class JamboxAdsHelper
 
     //region APP OPEN
     private static MaxAppOpenAd appOpenAd;
-    private static String appOpenId;
     private static boolean IsInvalidAppOpenId = false;
     private static boolean isAppOpenLoading;
     private static boolean showAppOpenOnLoad;
@@ -599,7 +608,6 @@ public class JamboxAdsHelper
     public static void InitializeAppOpenAds(String appOpenAId)
     {
         if (!IsSdkKeyValid()) return;
-        JamboxAdsHelper.appOpenId = appOpenAId;
         appOpenAd = new MaxAppOpenAd( appOpenAId, context);
         appOpenAd.setListener(new MaxAdListener()
         {
@@ -667,7 +675,7 @@ public class JamboxAdsHelper
 
         if (appOpenAd.isReady())
         {
-            appOpenAd.showAd(appOpenId);
+            appOpenAd.showAd(JamboxData.appOpenId);
         }
         else
         {
@@ -718,4 +726,7 @@ public class JamboxAdsHelper
         BOTTOM
     }
 
+
 }
+
+

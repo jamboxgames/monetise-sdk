@@ -56,6 +56,8 @@ dependencies {
     implementation("com.adjust.sdk:adjust-android:4.38.3")
     implementation("com.android.installreferrer:installreferrer:2.2")
 
+    implementation("com.google.code.gson:gson:2.11.0")
+
     // Add the following if you are using the Adjust SDK inside web views on your app
     //implementation("com.adjust.sdk:adjust-android-webbridge:4.38.3")
 

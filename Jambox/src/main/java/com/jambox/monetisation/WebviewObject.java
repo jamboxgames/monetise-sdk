@@ -25,17 +25,17 @@ public class WebviewObject {
     private ViewGroup.LayoutParams webviewLayout;
     private boolean isBannerOpenedByWebview = false;
 
-    public WebviewObject(Context context, String ClientId)
+    public WebviewObject(Context context)
     {
         this.context = context;
-        this.ClientId = ClientId;
+        this.ClientId = JamboxData.h5ClientId;
         this.webviewLayout = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
     }
 
-    public WebviewObject(Context context, String ClientId, ViewGroup.LayoutParams webviewLayout)
+    public WebviewObject(Context context, ViewGroup.LayoutParams webviewLayout)
     {
         this.context = context;
-        this.ClientId = ClientId;
+        this.ClientId = JamboxData.h5ClientId;
         this.webviewLayout = webviewLayout;
     }
 
@@ -62,6 +62,7 @@ public class WebviewObject {
             return;
         }
 
+        JamboxLog.Info("Starting H5 Games with Client ID : " + this.ClientId);
         if (webview == null)
         {
             webview = new WebView(context);

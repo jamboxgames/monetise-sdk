@@ -8,10 +8,10 @@ import com.adjust.sdk.AdjustEvent;
 
 public class AdjustHelper
 {
-    public static void Initialize(Context context, String appToken)
+    public static void Initialize(Context context)
     {
-        JamboxLog.Info("Initializing Adjust with appToken : " + appToken);
-        AdjustConfig config = new AdjustConfig(context, appToken, AdjustConfig.ENVIRONMENT_PRODUCTION);
+        JamboxLog.Info("Initializing Adjust with appToken : " + JamboxData.adjustId);
+        AdjustConfig config = new AdjustConfig(context, JamboxData.adjustId, AdjustConfig.ENVIRONMENT_PRODUCTION);
         Adjust.onCreate(config);
     }
 
