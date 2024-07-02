@@ -588,7 +588,7 @@ public class JamboxAdsHelper
 
         if (nativeId == null || nativeId.isEmpty())
         {
-            JamboxLog.Warn("Please initialize Native ads before using it...");
+            JamboxLog.Warn("Native ID should not be empty");
             return;
         }
 
