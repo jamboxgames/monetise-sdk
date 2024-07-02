@@ -2,6 +2,7 @@ package com.jambox.monetisation;
 
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.app.Activity;
 import android.content.Context;
@@ -32,8 +33,16 @@ import com.applovin.mediation.nativeAds.MaxNativeAdLoader;
 import com.applovin.mediation.nativeAds.MaxNativeAdView;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
+import com.applovin.sdk.AppLovinSdkSettings;
 import com.applovin.sdk.AppLovinSdkUtils;
+import com.google.android.gms.appset.AppSet;
+import com.google.android.gms.appset.AppSetIdClient;
+import com.google.android.gms.appset.AppSetIdInfo;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 
+import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public class JamboxAdsHelper
@@ -49,6 +58,8 @@ public class JamboxAdsHelper
     public static int statusBarPadding;
     public static int navigationBarPadding;
 
+    private static OnJamboxAdInitializeListener listener;
+
     //region INITIALIZE
     public static void InitializeAds(Context context, String interstitialId, String rewardedId, String bannerId)
     {
@@ -57,6 +68,12 @@ public class JamboxAdsHelper
 
     public static void InitializeAds(Context context, String interstitialId, String rewardedId,
                                      String bannerId, OnJamboxAdInitializeListener listener)
+    {
+        InitializeAds(context, interstitialId, rewardedId, bannerId, listener, false);
+    }
+
+    public static void InitializeAds(Context context, String interstitialId, String rewardedId,
+                                     String bannerId, OnJamboxAdInitializeListener listener, boolean testMode)
     {
         if (IsInitializeCalled)
             return;
@@ -93,21 +110,65 @@ public class JamboxAdsHelper
         if (!IsSdkKeyValid())
             return;
 
+        JamboxAdsHelper.interstitialId = interstitialId;
+        JamboxAdsHelper.rewardedId = rewardedId;
+        JamboxAdsHelper.bannerId = bannerId;
+        JamboxAdsHelper.listener = listener;
         IsInitializeCalled = true;
 
-        // Make sure to set the mediation provider value to "max" to ensure proper functionality
-        AppLovinSdk.getInstance(context).setMediationProvider("max");
-        AppLovinSdk.getInstance(context).initializeSdk(new AppLovinSdk.SdkInitializationListener() {
+        if (!testMode)
+        {
+            InitApplovin(false, "");
+            return;
+        }
+
+        //In test mode, we fetch the gaid and then init applovin
+        AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                AppSetIdClient client = AppSet.getClient(context);
+                Task<AppSetIdInfo> info = client.getAppSetIdInfo();
+                try
+                {
+                    Tasks.await(info);
+                    InitApplovin(true, info.getResult().getId());
+                }
+                catch (ExecutionException | InterruptedException e)
+                {
+                    throw new RuntimeException(e);
+                }
+                return info.getResult().getId();
+            }
+        };
+        task.execute();
+    }
+
+    static void InitApplovin(boolean testMode, String appSetID)
+    {
+        AppLovinSdk sdk;
+        if (testMode)
+        {
+            JamboxLog.Info("Applovin Init Test Device AAID : " + appSetID);
+            AppLovinSdkSettings settings = new AppLovinSdkSettings( context );
+            settings.setTestDeviceAdvertisingIds(Arrays.asList(appSetID));
+            sdk = AppLovinSdk.getInstance(settings, context);
+        }
+        else
+        {
+            sdk = AppLovinSdk.getInstance(context);
+        }
+
+        sdk.setMediationProvider("max");
+        sdk.initializeSdk(new AppLovinSdk.SdkInitializationListener() {
             @Override
             public void onSdkInitialized(AppLovinSdkConfiguration appLovinSdkConfiguration) {
                 //SDK Initialized
                 JamboxLog.Info("Ads Initialized");
                 JamboxLog.Info("Loading Ads...");
                 IsInitialized = true;
-                InitializeInterstitial(context, interstitialId);
-                InitializeRewarded(context, rewardedId);
-                JamboxAdsHelper.bannerId = bannerId;
-                if (listener !=null)
+                InitializeInterstitial(context);
+                InitializeRewarded(context);
+                if (listener != null)
                 {
                     listener.OnJamboxAdsInitialized();
                 }
@@ -132,11 +193,12 @@ public class JamboxAdsHelper
     }
 
     //region INTERSTITIAL
+    private static String interstitialId;
     private static MaxInterstitialAd interstitialAd;
     private static OnInterstitialAdListener interstitialAdListener;
     private static boolean IsInvalidInterstitialId = false;
     private static int interstitialRetryAttempt = 0;
-    private static void InitializeInterstitial(Context context, String interstitialId)
+    private static void InitializeInterstitial(Context context)
     {
         interstitialAd = new MaxInterstitialAd( interstitialId, (Activity) context );
         interstitialAd.setListener(new MaxAdListener()
@@ -250,11 +312,12 @@ public class JamboxAdsHelper
     //endregion
 
     //region REWARDED
+    private static String rewardedId;
     private static MaxRewardedAd rewardedAd;
     private static OnRewardedAdListener rewardedAdListener;
     private static boolean IsInvalidRewardedId = false;
     private static int rewardedRetryAttempt = 0;
-    private static void InitializeRewarded(Context context, String rewardedId)
+    private static void InitializeRewarded(Context context)
     {
         rewardedAd = MaxRewardedAd.getInstance( rewardedId, (Activity) context );
         rewardedAd.setListener(new MaxRewardedAdListener()
