@@ -582,7 +582,13 @@ public class JamboxAdsHelper
         if (!IsSdkKeyValid()) return;
         if (!IsInitialized)
         {
-            JamboxLog.Warn("Make sure that the SDK and Native Ad is initialized before trying to show ads...");
+            JamboxLog.Warn("Make sure that the SDK is initialized before trying to show ads...");
+            return;
+        }
+
+        if (nativeId == null || nativeId.isEmpty())
+        {
+            JamboxLog.Warn("Please initialize Native ads before using it...");
             return;
         }
 
