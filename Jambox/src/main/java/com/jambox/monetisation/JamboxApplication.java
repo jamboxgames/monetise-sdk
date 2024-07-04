@@ -10,6 +10,14 @@ public class JamboxApplication extends Application
     public void onCreate() {
         super.onCreate();
         context = this;
-        AdjustHelper.Initialize(context);
+        JamboxData.Fetch(this, new OnDataFetchListener()
+        {
+            @Override
+            public void OnDataFetched()
+            {
+                JamboxAdsHelper.OnDataFetched();
+                AdjustHelper.Initialize(context);
+            }
+        });
     }
 }

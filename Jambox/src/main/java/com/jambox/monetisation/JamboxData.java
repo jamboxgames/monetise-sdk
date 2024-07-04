@@ -47,7 +47,7 @@ public class JamboxData
         {
             //fetch data from server
             JamboxLog.Info("Fetching data from server");
-            new FetchDataFromUrl().execute("https://aliendro.id/demo/guide_json/data.json");
+            new FetchDataFromUrl().execute("https://aliendroid.jambox.games/api/v1/appconfig/findappbundle?bundle_id=" + context.getPackageName());
             return false;
         }
     }
@@ -55,7 +55,8 @@ public class JamboxData
     static void DataFetchCompleted()
     {
         IsDataFetchCompleted = true;
-        listener.OnDataFetched();
+        if (listener != null)
+            listener.OnDataFetched();
     }
 
     static void SavePref()
@@ -114,25 +115,39 @@ class FetchDataFromUrl extends AsyncTask<String, Void, String>
     }
 
     @Override
-    protected void onPostExecute(String data)
+    protected void onPostExecute(String dataString)
     {
-        data = "{\"interstitial\":\"0ee55073fd46cb13\",\"rewarded\":\"7d64a59befe5cef9\",\"banner\":\"ba924c1fc44d29ac\",\"appopen\":\"fce5b3d0bbba9df0\",\"native\":\"8d9bec8b94279ed6\",\"h5client\":\"9285717016\",\"adjust\":\"uw277yqlu1hc\"}";
+        JamboxLog.Info("Data from server : " + dataString);
 
         Gson gson = new Gson();
-        HashMap<String, String> map = new HashMap<String, String>();
-        map = (HashMap<String, String>) gson.fromJson(data, map.getClass());
+        ResponseData responseData = new ResponseData();
+        responseData = gson.fromJson(dataString, responseData.getClass());
 
-        JamboxData.interstitialId = map.get("interstitial");
-        JamboxData.rewardedId = map.get("rewarded");
-        JamboxData.bannerId = map.get("banner");
-        JamboxData.appOpenId = map.get("appopen");
-        JamboxData.nativeId = map.get("native");
-        JamboxData.adjustId = map.get("adjust");
-        JamboxData.h5ClientId = map.get("h5clientId");
+        if (!responseData.success)
+        {
+            JamboxLog.Error("Failed to fetch data from server : " + responseData.message);
+            return;
+        }
+
+        JamboxLog.Info("Data fetch success");
+        JamboxData.interstitialId = responseData.app_config.get("interstitial_id");
+        JamboxData.rewardedId = responseData.app_config.get("rewarded_id");
+        JamboxData.bannerId = responseData.app_config.get("banner_id");
+        JamboxData.appOpenId = responseData.app_config.get("appopen_id");
+        JamboxData.nativeId = responseData.app_config.get("native_id");
+        JamboxData.adjustId = responseData.app_config.get("adjust_id");
+        JamboxData.h5ClientId = responseData.app_config.get("h5_app_id");
 
         JamboxData.DataFetchCompleted();
         JamboxData.SavePref();
     }
+}
+
+class ResponseData
+{
+    public boolean success;
+    public HashMap<String, String> app_config;
+    public String message;
 }
 
 interface OnDataFetchListener

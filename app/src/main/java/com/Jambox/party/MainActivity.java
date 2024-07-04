@@ -59,11 +59,8 @@ public class MainActivity extends AppCompatActivity {
                     {
                         findViewById(R.id.main).setVisibility(View.VISIBLE);
 
-                        //Initializing native
-                        JamboxAdsHelper.InitializeNativeAd(nativeId);
-
                         //Initializing App Open Ad
-                        JamboxAdsHelper.InitializeAppOpenAds(appOpenId);
+                        JamboxAdsHelper.InitializeAppOpenAds();
                         appOpenManager = new AppOpenManager(context);
                     }
                 }, true);

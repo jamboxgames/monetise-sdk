@@ -580,11 +580,6 @@ public class JamboxAdsHelper
     private static MaxAd nativeAd;
     private static boolean IsInvalidNativeId = false;
 
-    public static void InitializeNativeAd(String nativeId)
-    {
-        if (!IsSdkKeyValid()) return;
-    }
-
     public static void ShowNativeAd(FrameLayout frameLayout, NativeAdTemplate template)
     {
         if (!IsSdkKeyValid()) return;
@@ -672,10 +667,16 @@ public class JamboxAdsHelper
     private static boolean isAppOpenLoading;
     private static boolean showAppOpenOnLoad;
 
-    public static void InitializeAppOpenAds(String appOpenAId)
+    public static void InitializeAppOpenAds()
     {
         if (!IsSdkKeyValid()) return;
-        appOpenAd = new MaxAppOpenAd( appOpenAId, context);
+        if (JamboxData.appOpenId == null || JamboxData.appOpenId.isEmpty())
+        {
+            JamboxLog.Warn("AppOpen ID should not be empty");
+            return;
+        }
+
+        appOpenAd = new MaxAppOpenAd( JamboxData.appOpenId, context);
         appOpenAd.setListener(new MaxAdListener()
         {
             @Override

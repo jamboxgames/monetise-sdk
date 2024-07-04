@@ -10,6 +10,12 @@ public class AdjustHelper
 {
     public static void Initialize(Context context)
     {
+        if (JamboxData.adjustId == null || JamboxData.adjustId.isEmpty())
+        {
+            JamboxLog.Info("Adjust ID is empty");
+            return;
+        }
+
         JamboxLog.Info("Initializing Adjust with appToken : " + JamboxData.adjustId);
         AdjustConfig config = new AdjustConfig(context, JamboxData.adjustId, AdjustConfig.ENVIRONMENT_PRODUCTION);
         Adjust.onCreate(config);
