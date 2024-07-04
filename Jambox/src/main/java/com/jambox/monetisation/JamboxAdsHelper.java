@@ -2,6 +2,7 @@ package com.jambox.monetisation;
 
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.app.Activity;
 import android.content.Context;
@@ -32,7 +33,16 @@ import com.applovin.mediation.nativeAds.MaxNativeAdLoader;
 import com.applovin.mediation.nativeAds.MaxNativeAdView;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
+import com.applovin.sdk.AppLovinSdkSettings;
 import com.applovin.sdk.AppLovinSdkUtils;
+import com.google.android.gms.appset.AppSet;
+import com.google.android.gms.appset.AppSetIdClient;
+import com.google.android.gms.appset.AppSetIdInfo;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
+
+import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public class JamboxAdsHelper
@@ -40,13 +50,15 @@ public class JamboxAdsHelper
 
     public static boolean IsInitialized;
     private static boolean IsInitializeCalled;
-    private static OnJamboxAdInitializeListener adInitializeListener;
     private static Context context;
 
     private static String jamboxKey = "T7PPns0K6JV00uGv0ZAEKsTWrpwA-N4Hchi_KKecaqTa_U5zQcyyoI_pTcC5TM1OgfrLz5dWGdASKWgK6l5Sks";
     private static String applovinKey = "";
     public static int statusBarPadding;
     public static int navigationBarPadding;
+
+    private static OnJamboxAdInitializeListener listener;
+    private static boolean testMode;
 
     //region INITIALIZE
     public static void InitializeAds(Context context)
@@ -55,6 +67,11 @@ public class JamboxAdsHelper
     }
 
     public static void InitializeAds(Context context, OnJamboxAdInitializeListener listener)
+    {
+        InitializeAds(context, listener, false);
+    }
+
+    public static void InitializeAds(Context context, OnJamboxAdInitializeListener listener, boolean testMode)
     {
         if (IsInitializeCalled)
             return;
@@ -90,7 +107,9 @@ public class JamboxAdsHelper
         JamboxAdsHelper.context = context;
         if (!IsSdkKeyValid())
             return;
-        adInitializeListener = listener;
+
+        JamboxAdsHelper.listener = listener;
+        JamboxAdsHelper.testMode = testMode;
         IsInitializeCalled = true;
 
         //JamboxLog.Info("Fecthing Ad Ids...");
@@ -109,9 +128,50 @@ public class JamboxAdsHelper
         if (!IsInitializeCalled)
             return;
 
-        // Make sure to set the mediation provider value to "max" to ensure proper functionality
-        AppLovinSdk.getInstance(context).setMediationProvider("max");
-        AppLovinSdk.getInstance(context).initializeSdk(new AppLovinSdk.SdkInitializationListener() {
+        if (!testMode)
+        {
+            InitApplovin(false, "");
+            return;
+        }
+
+        //In test mode, we fetch the gaid and then init applovin
+        AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                AppSetIdClient client = AppSet.getClient(context);
+                Task<AppSetIdInfo> info = client.getAppSetIdInfo();
+                try
+                {
+                    Tasks.await(info);
+                    InitApplovin(true, info.getResult().getId());
+                }
+                catch (ExecutionException | InterruptedException e)
+                {
+                    throw new RuntimeException(e);
+                }
+                return info.getResult().getId();
+            }
+        };
+        task.execute();
+    }
+
+    static void InitApplovin(boolean testMode, String appSetID)
+    {
+        AppLovinSdk sdk;
+        if (testMode)
+        {
+            JamboxLog.Info("Applovin Init Test Device AAID : " + appSetID);
+            AppLovinSdkSettings settings = new AppLovinSdkSettings( context );
+            settings.setTestDeviceAdvertisingIds(Arrays.asList(appSetID));
+            sdk = AppLovinSdk.getInstance(settings, context);
+        }
+        else
+        {
+            sdk = AppLovinSdk.getInstance(context);
+        }
+
+        sdk.setMediationProvider("max");
+        sdk.initializeSdk(new AppLovinSdk.SdkInitializationListener() {
             @Override
             public void onSdkInitialized(AppLovinSdkConfiguration appLovinSdkConfiguration) {
                 //SDK Initialized
@@ -120,9 +180,10 @@ public class JamboxAdsHelper
                 IsInitialized = true;
                 InitializeInterstitial(context);
                 InitializeRewarded(context);
-                if (adInitializeListener !=null)
+
+                if (listener != null)
                 {
-                    adInitializeListener.OnJamboxAdsInitialized();
+                    listener.OnJamboxAdsInitialized();
                 }
             }
         });
@@ -529,7 +590,13 @@ public class JamboxAdsHelper
         if (!IsSdkKeyValid()) return;
         if (!IsInitialized)
         {
-            JamboxLog.Warn("Make sure that the SDK and Native Ad is initialized before trying to show ads...");
+            JamboxLog.Warn("Make sure that the SDK is initialized before trying to show ads...");
+            return;
+        }
+
+        if (JamboxData.nativeId == null || JamboxData.nativeId.isEmpty())
+        {
+            JamboxLog.Warn("Native ID should not be empty");
             return;
         }
 

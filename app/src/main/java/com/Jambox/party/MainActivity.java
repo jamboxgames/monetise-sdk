@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
                         JamboxAdsHelper.InitializeAppOpenAds(appOpenId);
                         appOpenManager = new AppOpenManager(context);
                     }
-                });
+                }, true);
 
         SetButtonListeners();
 
